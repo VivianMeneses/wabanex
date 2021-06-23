@@ -5,7 +5,7 @@ defmodule Wabanex.Users.Get do
   def call(id) do
     with {:ok, uuid} <- UUID.cast(id),
          user <- Repo.get(User, uuid) do
-      user
+      {:ok, user}
     else
       :error -> {:error, "Invalid UUID"}
       nil -> {:error, "User not found"}
