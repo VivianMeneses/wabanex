@@ -1,14 +1,21 @@
 defmodule Wabanex.Users.Get do
-  alias Ecto.UUID
   alias Wabanex.{Repo, User}
+  alias Ecto.UUID
 
-  def call(id) do
-    with {:ok, uuid} <- UUID.cast(id),
-         user <- Repo.get(User, uuid) do
-      {:ok, user}
-    else
-      :error -> {:error, "Invalid UUID"}
+  def call(params) do
+    params
+    |> UUID.cast()
+    |> handle_response()
+  end
+
+  defp handle_response(:error) do
+    {:error, "Invalid UUID"}
+  end
+
+  defp handle_response({:ok, uuid}) do
+    case Repo.get(User, uuid) do
       nil -> {:error, "User not found"}
+      user -> {:ok, user}
     end
   end
 end
